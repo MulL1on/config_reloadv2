@@ -1,0 +1,28 @@
+version: "3"
+services:
+  app:
+    build:
+      context: ./app
+    depends_on:
+        - confd
+    volumes:
+        - confd_etc:/etc/confd
+  confd:
+    build: .
+    command:
+      - "-backend=etcd"
+      - "-node=http://etcd:2379"
+    volumes:
+      - confd_etc:/etc/confd
+
+  etcd:
+      image: bitnami/etcd:latest
+      volumes:
+        - etcd_data:/bitnami/etcd/data
+      environment:
+        - ALLOW_NONE_AUTHENTICATION=yes
+        - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+
+volumes:
+  etcd_data:
+  confd_etc:
